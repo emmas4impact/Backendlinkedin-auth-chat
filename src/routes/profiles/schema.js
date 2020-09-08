@@ -22,6 +22,7 @@ const profileSchema = new Schema(
         },
         message: "User already exists!",
       },
+     
     }, //VALIDATION
     bio: { type: String, required: true },
     title: { type: String, required: true },
@@ -42,7 +43,9 @@ const profileSchema = new Schema(
         message: "User already exists!",
       },
     }, //validaton
+ 
   },
+  
   { timestamps: true }
 );
 
