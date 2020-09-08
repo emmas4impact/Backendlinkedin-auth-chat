@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
 const server = express();
 
 //server.use(express.static(join(__dirname, `../public`)))
-const port = process.env.PORT;
+const port = process.env.PORT || 3005
 server.use(cors());
 server.use(express.json());
 server.use("/profile", profileRouter);
@@ -17,9 +17,10 @@ server.use("/post", postRouter);
 server.use("/experience", experienceRouter);
 console.log(listEndpoints(server));
 
+
 mongoose
   .connect(
-    `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@linkedin.7anhn.mongodb.net/linkedin-back?retryWrites=true&w=majority`,
+    `mongodb+srv://strong:stronger@linkedin.7anhn.mongodb.net/linkedin-back?retryWrites=true&w=majority`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -31,3 +32,4 @@ mongoose
     })
   )
   .catch((err) => console.log(err));
+

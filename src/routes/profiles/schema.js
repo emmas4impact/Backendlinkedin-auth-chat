@@ -1,4 +1,7 @@
 const { model, Schema } = require("mongoose");
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt")
+const validate = require("validator")
 
 const profileSchema = new Schema(
   {
@@ -18,7 +21,7 @@ const profileSchema = new Schema(
             let error = new Error();
             error.message = "THIS EMAIL ALREADY EXISTS";
             throw error;
-          }else return true
+          } else return true
         },
         message: "User already exists!",
       },
@@ -37,14 +40,57 @@ const profileSchema = new Schema(
             let error = new Error();
             error.message = "THIS  USERNAME already EXISTS";
             throw error;
-          }else return true
+          } else return true
         },
         message: "User already exists!",
       },
     }, //validaton
+    password: {
+      type: String,
+      required: true,
+      minlength: 7,
+    },
   },
   { timestamps: true }
 );
+
+profileSchema.statics.findByCredentials = async (email, password) => {
+  const user = await profileModel.findOne({ email });
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    const err = new Error("Unable to login");
+    err.httpStatusCode = 401;
+    throw err;
+  }
+  return user;
+};
+
+profileSchema.pre("save", async function (next) {
+  const user = this
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+  next();
+});
+profileSchema.post("validate", function (error, doc, next) {
+  if (error) {
+    error.httpStatusCode = 400;
+    next(error);
+  } else {
+    next();
+  }
+});
+
+profileSchema.post("save", function (error, doc, next) {
+  if (error.name === "MongoError" && error.code === 11000) {
+    error.httpStatusCode = 400;
+    next(error);
+  } else {
+    next();
+  }
+});
+
+
 
 const profileModel = model("profiles", profileSchema);
 
