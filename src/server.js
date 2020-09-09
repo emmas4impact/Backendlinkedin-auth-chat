@@ -3,7 +3,8 @@ const listEndpoints = require("express-list-endpoints");
 const profileRouter = require("./routes/profiles");
 const postRouter = require("./routes/posts");
 const passport = require("passport");
-const authFace = require("./Oauth/oathFacebook");
+const session = require("express-session")
+ require("../src/routes/profiles/authTools")
 const cookieParser = require("cookie-parser");
 const http = require("http")
 const socketio = require("socket.io")
@@ -18,6 +19,7 @@ const experienceRouter = require("./routes/experiences");
 const { join } = require("path");
 const cors = require("cors");
 const mongoose = require("mongoose");
+
 const server = express();
 server.use(cookieParser());
 const app = http.createServer(server)
@@ -27,7 +29,13 @@ const io = socketio(app)
 
 //server.use(express.static(join(__dirname, `../public`)))
 const port = process.env.PORT;
+server.use(session({
+  resave: false,
+  saveUninitialized: true,
+  secret: 'SECRET'
+}))
 server.use(passport.initialize());
+server.use(passport.session())
 server.use(cors());
 server.use(express.json());
 server.use("/profile", profileRouter);
