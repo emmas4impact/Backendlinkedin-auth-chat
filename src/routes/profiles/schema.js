@@ -24,6 +24,11 @@ const profileSchema = new Schema(
       },
      
     }, //VALIDATION
+    password: {
+      type: String,
+      required: true,
+      minlength: 7,
+    },
     bio: { type: String, required: true },
     title: { type: String, required: true },
     area: { type: String, required: true },
