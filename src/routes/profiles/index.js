@@ -40,7 +40,15 @@ router.get("/", async (req, res, next) => {
     console.log(error);
   }
 });
-router.get("/email", authorize, async (req, res, next) => {
+
+router.get("/authorizeUser" , authorize , async (req,res , next)=>{
+ try {
+   res.send("ok")
+ } catch (error) {
+   next("error occured")
+ }
+})
+router.get("/email" ,  async (req, res, next) => {
   try { 
     let user = await profileModel.find({email : req.body.email});
     res.send(user);
@@ -110,7 +118,7 @@ router.get('/facebookLogin',
       const { token } = req.user.tokens;
       res.cookie("accessToken", token, { httpOnly: true });
     //  const id = facebookModel.findById({_id: })
-      res.status(200).redirect("http://localhost:3006/profile/facebookDetails");
+      res.status(200).redirect("http://localhost:3008/profile/facebookDetails");
     } catch (error) {
       console.log(error);
     }
@@ -120,8 +128,7 @@ router.get('/facebookLogin',
   passport.authenticate('linkedin'));
 
   router.get('/auth/linkedin/callback', passport.authenticate('linkedin', {
-
-    successRedirect: '/profile/linkedin',
+    successRedirect: 'http://localhost:3003/profile/user23',
     failureRedirect: 'profile/register'
   }));
 module.exports = router;
