@@ -1,4 +1,5 @@
 const MessageModel = require("./schema")
+const SingleModel = require("./singleSchema")
 
 const addMessage = async (message, sender, room) => {
   try {
@@ -10,4 +11,16 @@ const addMessage = async (message, sender, room) => {
   }
 }
 
-module.exports = addMessage
+
+const addSingleMessage = async (message, sender, receiver) => {
+  try {
+    const newMessage = new SingleModel({ text: message, sender, receiver })
+    const singleMessage = await newMessage.save()
+    return singleMessage
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+module.exports = {addMessage, addSingleMessage}
