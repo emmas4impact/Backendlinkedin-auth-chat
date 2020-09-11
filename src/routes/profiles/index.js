@@ -25,6 +25,11 @@ router.post("/login", async (req, res, next) => {
 
     const user = await profileModel.findByCredentials(email, password) ;
     const tokens = await authenticate(user) ;
+    res.cookie("accessToken", tokens, {
+      path: "/",
+      httpOnly: true,
+      sameSite: true,
+    })
     if(user){
       res.send(tokens) ;
     }
@@ -32,10 +37,17 @@ router.post("/login", async (req, res, next) => {
  next(error) ;
   }
 }) ;
-router.get("/", async (req, res, next) => {
+router.get("/", authorize,async (req, res, next) => {
   try {
     let user = await profileModel.find();
     res.send(user);
+  } catch (error) {
+    console.log(error);
+  }
+});
+router.get("/me", authorize, async (req, res, next) => {
+  try {
+    res.send(req.user);
   } catch (error) {
     console.log(error);
   }

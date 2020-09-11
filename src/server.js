@@ -6,6 +6,7 @@ const passport = require("passport");
 const session = require("express-session")
  require("../src/routes/profiles/authTools")
 const cookieParser = require("cookie-parser");
+const profileModel = require("./routes/profiles/schema");
 const http = require("http")
 const socketio = require("socket.io")
 const {
@@ -14,12 +15,11 @@ const {
   getUser,
   getUsersInRoom,
 } = require("./routes/rooms/users")
-const addMessage = require("./routes/messages/messages")
+const {addMessage, addSingleMessage}= require("./routes/messages/messages")
 const experienceRouter = require("./routes/experiences");
 const { join } = require("path");
 const cors = require("cors");
 const mongoose = require("mongoose");
-
 const server = express();
 server.use(cookieParser());
 const app = http.createServer(server)
@@ -82,8 +82,17 @@ io.on("connection", (socket) => {
       console.log(error)
     }
   })
+  socket.on("privateChat", ({ sender, text, receiver }) => {
+    let to = profileModel.findById((user)=>user._id===receiver)
+    let from = profileModel.findById((user) => user._id === sender);
+    io.to(to.id).emit("message", { sender, text, receiver});
+    io.to(from.id).emit("message", { sender, text, receiver});
 
-  socket.on("sendMessage", async ({ text, room }) => {
+    console.log(to);
+    console.log(from);
+  });
+  
+  socket.on("groupChat", async ({ text, room }) => {
     try {
       const user = await getUser(room, socket.id)
 
@@ -131,7 +140,7 @@ io.on("connection", (socket) => {
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@linkedin.7anhn.mongodb.net/linkedin-back?retryWrites=true&w=majority`,
+    process.env.MONGO_CONNECTION,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
