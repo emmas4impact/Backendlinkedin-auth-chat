@@ -3,9 +3,10 @@ const profileModel = require("../../src/routes/profiles/schema") ;
 const { verifyJWT } = require("../../src/routes/profiles/authTools") ;
 
 const authorize = async (req, res, next) => {
+  console.log("COOKIES:", req.cookies)
   try {
-    const token = req.headers.authorization.replace("Bearer ", "") ;
-    console.log(token);
+    const token =req.cookies.accessToken;
+    //console.log(req.cookies);
     const decoded = await verifyJWT(token);
     console.log(decoded)
     const user = await profileModel.findOne({
