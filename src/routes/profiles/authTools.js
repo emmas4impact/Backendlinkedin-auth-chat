@@ -9,20 +9,20 @@ const authenticate = async (user) => {
   try {
     // generate tokens
     const newAccessToken = await generateJWT({ _id: user._id }) ;
-    await user.save() ;
-    return { token: newAccessToken } ;
+    //await user.save() ;
+    return newAccessToken;
   } catch (error) {
     console.log(error) ;
     throw new Error(error) ;
   }
-} ;
+}
 
 const generateJWT = (payload) =>
   new Promise((res, rej) =>
     jwt.sign(
       payload,
       process.env.SECRET_KEY,
-      { expiresIn: "5m" },
+      { expiresIn: "15m" },
       (err, token) => {
         if (err) rej(err) ;
         res(token) ;
@@ -33,8 +33,8 @@ const generateJWT = (payload) =>
 const verifyJWT = (token) =>
   new Promise((res, rej) =>
     jwt.verify(token,  process.env.SECRET_KEY, (err, decoded) => {
-      if (err) rej(err) ;
-      res(decoded) ;
+      if (err) rej(err)
+      res(decoded)
     })
   ) ;
 
@@ -81,7 +81,7 @@ passport.use(new LinkedInStrategy({
 }, function(accessToken, refreshToken, profile, done) {
   // asynchronous verification, for effect...
   process.nextTick( async function () {
-    //   console.log(profile)
+    console.log(profile)
       const newUser = {
           name: profile.name.givenName,
           surname:profile.name.familyName,
