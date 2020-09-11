@@ -73,8 +73,8 @@ const verifyJWT = (token) =>
 
  
 passport.use(new LinkedInStrategy({
-  clientID: '78si2ah6m6mlug',
-  clientSecret: 'UtBh1gUnj357wgs8',
+  clientID: process.env.LINKEDIN_ID,
+  clientSecret: process.env.LINKEDIN_SECRET,
   callbackURL: "http://localhost:3006/profile/auth/linkedin/callback",
   scope: ['r_emailaddress', 'r_liteprofile'],
   state: true
