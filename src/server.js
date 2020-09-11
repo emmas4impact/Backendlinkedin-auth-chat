@@ -131,7 +131,7 @@ io.on("connection", (socket) => {
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@linkedin.7anhn.mongodb.net/linkedin-back?retryWrites=true&w=majority`,
+    process.env.MONGO_CONNECTION,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
