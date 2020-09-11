@@ -23,11 +23,14 @@ router.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
 
     const user = await profileModel.findByCredentials(email, password) ;
+    console.log(user)
     const tokens = await authenticate(user) ;
+    console.log(tokens)
     res.cookie("accessToken", tokens, {
       path: "/",
       httpOnly: true,
-      sameSite: true,
+      sameSite: "None",
+      secure: true
     })
     if(user){
       res.send(tokens) ;
