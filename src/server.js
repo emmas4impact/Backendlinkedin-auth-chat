@@ -22,6 +22,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const server = express();
 server.use(cookieParser());
+server.use(cors());
 const app = http.createServer(server);
 const io = socketio(app);
 
@@ -36,7 +37,7 @@ server.use(
 );
 server.use(passport.initialize());
 server.use(passport.session());
-server.use(cors());
+
 server.use(express.json());
 server.use("/profile", profileRouter);
 server.use("/post", postRouter);
