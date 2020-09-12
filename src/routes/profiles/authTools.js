@@ -10,6 +10,7 @@ const authenticate = async (user) => {
     // generate tokens
     const newAccessToken = await generateJWT({ _id: user._id }) ;
     //await user.save() ;
+    console.log("TOKEN ", newAccessToken)
     return newAccessToken;
   } catch (error) {
     console.log(error) ;
@@ -22,7 +23,7 @@ const generateJWT = (payload) =>
     jwt.sign(
       payload,
       process.env.SECRET_KEY,
-      { expiresIn: "15m" },
+      //{ expiresIn: "15m" },
       (err, token) => {
         if (err) rej(err) ;
         res(token) ;
@@ -31,12 +32,15 @@ const generateJWT = (payload) =>
   ) ;
 
 const verifyJWT = (token) =>
-  new Promise((res, rej) =>
-    jwt.verify(token,  process.env.SECRET_KEY, (err, decoded) => {
+  new Promise((res, rej) =>{
+    // console.log('*****************************************************************')
+    // console.log(token)
+    // console.log(process.env.SECRET_KEY)
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
       if (err) rej(err)
       res(decoded)
     })
-  ) ;
+  }) ;
 
   passport.use(
     new facebookStrategy({

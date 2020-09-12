@@ -22,27 +22,37 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const server = express();
 server.use(cookieParser());
-server.use(cors());
-const app = http.createServer(server);
-const io = socketio(app);
+//server.use(cors());
 
-//server.use(express.static(join(__dirname, `../public`)))
-const port = process.env.PORT;
-server.use(
-  session({
-    resave: false,
-    saveUninitialized: true,
-    secret: "SECRET",
-  })
-);
+const whitelist = ["http://localhost:3001"]
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true)
+    } else {
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
+  credentials: true,
+}
+
 server.use(passport.initialize());
-server.use(passport.session());
+// server.use(passport.session());
 
+server.use(cors(corsOptions))
 server.use(express.json());
 server.use("/profile", profileRouter);
 server.use("/post", postRouter);
 server.use("/experience", experienceRouter);
 console.log(listEndpoints(server));
+const app = http.createServer(server);
+const io = socketio(app);
+
+//server.use(express.static(join(__dirname, `../public`)))
+const port = process.env.PORT;
+
+
+
 
 io.on("connection", (socket) => {
   console.log("New WebSocket connection ", socket.id);
@@ -86,7 +96,10 @@ io.on("connection", (socket) => {
     let from = profileModel.findById((user) => user._id === sender);
     io.to(to.id).emit("message", { sender, text, receiver});
     io.to(from.id).emit("message", { sender, text, receiver});
-
+    // io.to(room).emit("roomData", {
+    //   room: room,
+    //   users: roomMembers,
+    // })
     console.log(to);
     console.log(from);
   });

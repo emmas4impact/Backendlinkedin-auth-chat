@@ -25,13 +25,8 @@ router.post("/login", async (req, res, next) => {
     const user = await profileModel.findByCredentials(email, password) ;
     console.log(user)
     const tokens = await authenticate(user) ;
-    console.log(tokens)
-    res.cookie("accessToken", tokens, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "None",
-      secure: true
-    })
+    console.log("newly generated token : ",tokens)
+    res.cookie("accessToken", tokens)
     if(user){
       res.send(tokens) ;
     }
@@ -73,7 +68,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", authorize,async (req, res, next) => {
   try {
     const editprofile = await profileModel.findByIdAndUpdate(
       req.params.id,
@@ -86,7 +81,7 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", authorize, async (req, res, next) => {
   try {
     const deleted = await profileModel.findByIdAndDelete(req.params.id);
     res.send(deleted);

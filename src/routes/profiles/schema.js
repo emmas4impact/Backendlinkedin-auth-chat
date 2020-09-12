@@ -52,6 +52,16 @@ const profileSchema = new Schema(
   },
   { timestamps: true }
 );
+profileSchema.methods.toJSON = function () {
+  const user = this
+  const userObject = user.toObject()
+
+  delete userObject.password
+  delete userObject.__v
+
+  return userObject
+}
+
 profileSchema.statics.findByCredentials = async (email, password) => {
   const user = await profileModel.findOne({ email }) ;
   const isMatch = await bcrypt.compare(password, user.password) ;
